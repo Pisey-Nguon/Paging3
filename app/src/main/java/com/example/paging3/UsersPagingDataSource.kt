@@ -17,6 +17,7 @@ class UsersPagingDataSource :
             }
             result.fold(
                 success = {
+                    println("page number = $pageNumber")
                     LoadResult.Page(
                         data = it.data,
                         prevKey = null,
