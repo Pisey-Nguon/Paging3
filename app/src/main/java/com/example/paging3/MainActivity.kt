@@ -1,15 +1,13 @@
 package com.example.paging3
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
-import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paging3.databinding.ActivityMainBinding
 import kotlinx.coroutines.flow.collectLatest
@@ -28,35 +26,45 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
+        binding.rvSample.apply {
+            layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true)
+            adapter = myAdapter.withLoadStateFooter(
+                footer = ProductLoadStateAdapter { myAdapter.retry() }
+            )
+        }
 
-        val lm = LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
-        binding.rvSample.layoutManager = lm
-        binding.rvSample.adapter = myAdapter
         lifecycleScope.launch {
-            viewModel.users.collectLatest {
+            viewModel.products.collectLatest {
                 myAdapter.submitData(it)
             }
         }
 
         myAdapter.addLoadStateListener { loadState ->
-            when (val state = loadState.source.refresh) {
-                is LoadState.NotLoading -> {
-                    /**
-                     * Setting up the views as per your requirement
-                     */
-                    Log.d(TAG, "onCreate: NotLoading")
+
+            if (loadState.refresh is LoadState.Loading) {
+
+//                mainBinding.btnRetry.visibility = View.GONE
+//
+//                // Show ProgressBar
+//                mainBinding.progressBar.visibility = View.VISIBLE
+            }
+            else {
+                // Hide ProgressBar
+//                mainBinding.progressBar.visibility = View.GONE
+
+                // If we have an error, show a toast
+                val errorState = when {
+                    loadState.append is LoadState.Error -> loadState.append as LoadState.Error
+                    loadState.prepend is LoadState.Error -> loadState.prepend as LoadState.Error
+                    loadState.refresh is LoadState.Error -> {
+//                        mainBinding.btnRetry.visibility = View.VISIBLE
+                        loadState.refresh as LoadState.Error
+                    }
+                    else -> null
                 }
-                is LoadState.Loading -> {
-                    /**
-                     * Setting up the views as per your requirement
-                     */
-                    Log.d(TAG, "onCreate: Loading ")
-                }
-                is LoadState.Error -> {
-                    /**
-                     * Setting up the views as per your requirement
-                     */
-                    Log.d(TAG, "onCreate: Error")
+                errorState?.let {
+                    Toast.makeText(this, it.error.message, Toast.LENGTH_LONG).show()
                 }
             }
         }

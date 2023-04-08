@@ -6,16 +6,16 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.example.paging3.databinding.MyItemLayoutBinding
 
-class MyAdapter:PagingDataAdapter<UserData,MyViewHolder>(DIFFER) {
+class MyAdapter:PagingDataAdapter<ProductData,MyViewHolder>(DIFFER) {
 
 
     companion object{
-        val DIFFER = object : DiffUtil.ItemCallback<UserData>() {
-            override fun areItemsTheSame(oldItem: UserData, newItem: UserData): Boolean {
+        val DIFFER = object : DiffUtil.ItemCallback<ProductData>() {
+            override fun areItemsTheSame(oldItem: ProductData, newItem: ProductData): Boolean {
                 return oldItem.id == newItem.id
             }
 
-            override fun areContentsTheSame(oldItem: UserData, newItem: UserData): Boolean {
+            override fun areContentsTheSame(oldItem: ProductData, newItem: ProductData): Boolean {
                 return oldItem == newItem
             }
 

@@ -6,8 +6,8 @@ import androidx.paging.*
 import kotlinx.coroutines.flow.Flow
 
 class MainViewModel:ViewModel() {
-    val users: Flow<PagingData<UserData>> =
-        Pager(config = PagingConfig(pageSize = 2),
-            pagingSourceFactory = { UsersPagingDataSource() }
+    val products: Flow<PagingData<ProductData>> =
+        Pager(config = PagingConfig(pageSize = 10, initialLoadSize = 10),
+            pagingSourceFactory = { ProductsPagingDataSource() }
         ).flow.cachedIn(viewModelScope)
 }
